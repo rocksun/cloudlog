@@ -14,7 +14,7 @@
 
 ## 配置认证授权
 
-登录 AWS 国内账号，进入 [我的安全凭证](https://console.amazonaws.cn/iam/home#/security_credentials)配置一个“用于访问 CLI、开发工具包和 API 的访问密钥”。
+登录 AWS 国内账号，进入[我的安全凭证](https://console.amazonaws.cn/iam/home#/security_credentials)配置一个“用于访问 CLI、开发工具包和 API 的访问密钥”。
 
 命令行里执行：
 

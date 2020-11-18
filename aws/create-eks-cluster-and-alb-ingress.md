@@ -136,7 +136,7 @@ alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 8081}]'
 kubectl get ingress/ingress-2048 -n game-2048
 
 NAME           CLASS    HOSTS   ADDRESS                                                                          PORTS   AGE
-ingress-2048   <none>   *       k8s-game2048-ingress2-*****************.cn-northwest-1.elb.amazonaws.com.cn   8081      16m
+ingress-2048   <none>   *       k8s-game2048-ingress2-*****************.cn-northwest-1.elb.amazonaws.com.cn   80      16m
 ```
 
 然后浏览器里访问 http://k8s-game2048-ingress2-*****************.cn-northwest-1.elb.amazonaws.com.cn:8081 即可看到 2048 的界面。
@@ -147,7 +147,7 @@ ingress-2048   <none>   *       k8s-game2048-ingress2-*****************.cn-north
 通过 eksctl 创建的集群会自动把创建者加到 system:masters 组中，拥有最高的权限。如果需要添加其他的用户，需要首先创建 arn 到用户的映射。首先需要获取用户的 arn ：
 
 ```shell
->aws iam get-user --user-name someuser
+aws iam get-user --user-name someuser
 {
     "User": {
         "Path": "/",
@@ -169,8 +169,30 @@ eksctl create iamidentitymapping --cluster rocksun-cluster --arn arn:aws-cn:iam:
 通过 --group 参数，我们也将该用户添加到了 system:masters ，所以这个用户也具备了集群的管理员权限。
 
 
-## 参考
+## 问题与心得
 
+### Application Load Balancer（ALB）很强大也很重
+
+使用一般的 ingress controller 时，创建一个 ingress 只是在 ingress controller 服务上添加了一个配置，但是对于[AWS Load Balancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller)来说要复杂的多，会在 AWS 上创建一个 Application Load Balancer 和多个 Target Groups 。一个 ALB 会包含多个网络接口和许多其他相关资源，这带来了一系列的问题。
+
+* 因为创建 ALB 的过程较慢，创建期间验证 Ingress 功能时会失败，所以需要耐心观测 ALB 的状态再验证。
+* 每次新建 ingress 时对应的 ADDRESS 也会发生变化，所以应用部署时应该避免删除 Ingress，而应该采用更新方式。
+* 因为每个 ingress 对应了一组 AWS 资源，所以删除时也需要通过 ingress 删除。特别是删除集群前，需要将所有的 ingress 删除完，否则手工删除 ingress 相关资源会有点麻烦。
+
+### AWS 有门槛，必须使用命令行
+
+AWS 的多可用区（AZ）以及其他设计，架构上更加完美，再加上不太快的 UI 访问速度，确实会会给 AWS 的日常管理带来很大的成本，会使很多习惯于在云服务界面上点来点去的同事感觉到不适应。不过，很多程序员还是喜欢命令行的，可以让自己所做的操作有一个清晰的描述，日久天长会大大提高工作效率。
+
+### Windows 实例巨贵
+
+知道 Windows 会有 license 的成本问题，但是没想到会贵这么多（其他云的 Linux 和 Windows 实例都是一个价格，其中的原理是？），让我望而却步，各位有 windows 实例需求的需要三思。
+
+### AWS 的定位
+
+目前我们还只是把 AWS 当作测试环境，但是 AWS 更加复杂的底层设计确实更适合生产环境。
+
+## 参考
 
 * [eksctl 快速入门](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html)
 * [创建 ingress controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
+* [AWS Load Balancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller)

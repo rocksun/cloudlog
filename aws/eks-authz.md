@@ -95,3 +95,4 @@ aws eks --region cn-northwest-1 update-kubeconfig --name some-cluster
 * [Manage IAM users and roles](https://eksctl.io/usage/iam-identity-mappings/)
 * [Create a kubeconfig for Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html)
 * [Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
+* [Rancher Kubernetes RBAC integration](https://rancher.com/docs/rancher/v1.6/en/kubernetes/rbac/)

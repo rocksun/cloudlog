@@ -59,6 +59,26 @@ eksctl delete nodegroup ng-1 --cluster patos-cluster
 
 轻松愉快。
 
+## 更新
+
+### 关于 NAT 网关
+
+默认情况下 eckctl 创建的 NodeGroup 都是 public 的，产生的节点都是有公网 IP ，这样虽然很好，但是也给我们有些工作带来了麻烦，比如说配置白名单，我们希望节点都是通过 NAT 网关访问互联网，这样白名单配置就可以相对简单一点。
+
+eks 支持创建 private 的 NodeGroup ，这样 NodeGroup 的 Node 都不会有公网 IP ，会通过 NAT 网关实现对互联网的访问，这样在外部看到的 IP 会是 NAT 网关的 IP，相对稳定。
+
+方法也很简单，前面创建 NodeGroup 时增加 privateNetworking 参数，例如以下示例：
+
+```yaml
+managedNodeGroups:
+- name: private-mng-1
+  instanceType: t3a.2xlarge
+  minSize: 2
+  maxSize: 2
+  privateNetworking: true
+```
+
+对 nodeGroups 和 managedNodeGroups 都有效。
 
 ## 参考
 

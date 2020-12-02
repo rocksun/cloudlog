@@ -14,7 +14,7 @@ eksctl 创建集群时，会新创建一个专门的 VPC ，这个 VPC 会创建
 
 这几个子网会位于不同的可用区(AZ)，会设置成自动分配公有 IPv4 地址(mapPublicIpOnLaunch)，另外会配置一条默认路由，指向互联网网关(internet gateway)。
 
-关联到这些公网的节点组创建的 EC2 节点，默认情况下会自动分配一个公网 IPv4 地址，节点可以直接访问互联网。
+关联到这些公网的节点组所创建的 EC2 节点，默认情况下会自动分配一个公网 IPv4 地址，节点可以直接访问互联网。
 
 ### 私网子网
 
@@ -26,13 +26,13 @@ eksctl 创建集群时，会新创建一个专门的 VPC ，这个 VPC 会创建
 
 这三个子网没有设置自动分配公有 IPv4 地址，默认路由指向的是一个 NAT 网关，这个 NAT 网关位于前述的一个公网子网上，有公网 IPv4 地址。
 
-关联到这些私网的节点组创建的 EC2 节点，默认情况下不会有 IPv4 地址，但这些节点可以通过 NAT 网关访问互联网。
+关联到这些私网的节点组所创建的 EC2 节点，默认情况下不会有 IPv4 地址，但这些节点可以通过 NAT 网关访问互联网。
 
 ### Ingress 和 LoadBalancer
 
-当我们部署 Ingress (参考[在 AWS 中国使用 eksctl 配置集群和 Ingress Controller](http://yylives.cc/2020/11/16/create-eks-cluster-and-alb-ingress/)) 时， EKS 会自动创建一个 ALB （Application Load Balancer），这个 ALB 有一个固定的 DNS 名称，还会包含 3 个公网 IPv4 地址，分别位于前述的公网子网中。
+当我们部署 Ingress (参考[在 AWS 中国使用 eksctl 配置集群和 Ingress Controller](http://yylives.cc/2020/11/16/create-eks-cluster-and-alb-ingress/)) 时， EKS 会自动创建一个 ALB （Application Load Balancer），这个 ALB 有一个固定的 DNS 名称，还会包含 3 个公网的 IPv4 地址，分别位于前述的公网子网中。
 
-所以用户可以通过互联网访问 ALB 的 DNS 域名，域名会解析到某个子网负载均衡 IPv4 地址，ALB 再将相应的流量的转发到相应的 Pod 上，这个过程全部在 VPC 中进行。
+所以用户可以通过互联网访问 ALB 的 DNS 域名，域名会解析到某个子网负载均衡 IPv4 地址，ALB 再将相应的流量的转发到相应的 Pod 上，这个过程全部在 VPC 中。
 
 ## EKS 对于 VPC 使用的最佳实践
 

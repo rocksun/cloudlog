@@ -1,12 +1,12 @@
 # Windows 10 使用 Hyper-V 和 Vagrant 创建虚拟机环境
 
-以前我都是用 Vagrant + VirtualBox 快速创建虚拟机环境。通过 Vagrant 配置文件，我们可以快速初始化多个关联的虚拟机，并省去了设置网络和存储的时间。还可以将 Vagrant 项目直接转给别人，让别人快速搭建类似的环境。用了 Kubernetes Desktop 后，需要开启 Windows 的 Hyper-V，这样就无法使用 VirtualBox 了。所以，为了同时用 Kubernetes 和虚拟化，使用 Hyper-V 代替 VirtualBox会是一个自然的选择。不过目前 Vagrant 还不支持 Hyper-V 网络初始化，所以要有需要自定义的步骤。
+以前我都是用 Vagrant + VirtualBox 快速创建虚拟机环境。通过 Vagrant 配置文件，我们可以快速初始化多个关联的虚拟机，并省去了设置网络和存储的时间。还可以将 Vagrant 项目直接转给别人，让别人快速搭建类似的环境。用了 Kubernetes Desktop 后，需要开启 Windows 的 Hyper-V，这样就无法使用 VirtualBox 了。所以，为了同时使用 Kubernetes 和虚拟化，使用 Hyper-V 代替 VirtualBox会是一个自然的选择。不过目前 Vagrant 还不支持 Hyper-V 网络初始化，所以要有需要自定义的步骤。
 
-本文创建 vagrant 项目的完整代码在[这里](https://github.com/rocksun/vagrant-hyperv)，大家直接使用。 
+本文创建的 vagrant 项目的完整代码在[这里](https://github.com/rocksun/vagrant-hyperv)，大家直接使用。 
 
 ## 启用 Hyper-V 和 SMB 1.0/CIFS 文件共享支持
 
-我们 Windows 10 默认没有开启，所以需要手工开启，使用管理员运行 Powershell ，然后执行：
+我们的 Windows 10 默认没有开启 Hyper-V 和 SMB 1.0/CIFS，所以需要手工开启，使用管理员运行 Powershell ，然后执行：
 
 ```powershell
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
@@ -26,10 +26,9 @@ Enable-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol" -All
 vagrant plugin install vagrant-reload
 ```
 
-
 ## 准备 Vagrant 目录
 
-准备一个目录，作为 vagrant 项目的根目录。添加文件 scripts\create-nat-hyperv-switch.ps1：
+准备一个目录（完成后的项目在[这里](https://github.com/rocksun/vagrant-hyperv)），作为 vagrant 项目的根目录。添加文件 scripts\create-nat-hyperv-switch.ps1：
 
 ```powershell
 # See: https://www.petri.com/using-nat-virtual-switch-hyper-v

@@ -122,6 +122,11 @@ Vagrant.configure("2") do |config|
         hv.vmname = "homestead"
     end
     config.vm.hostname = "hypervhost"
+    config.vm.synced_folder '.', '/vagrant', {
+      type: 'smb', mount_options: ['vers=3.0'],
+      smb_username: ENV['VAGRANT_SMB_USERNAME'],
+      smb_password: ENV['VAGRANT_SMB_PASSWORD']
+    }
     config.vm.box = "centos/7"
 end
 ```
@@ -134,7 +139,7 @@ end
 vagrant up
 ```
 
-当询问使用哪个 switch ，选择 “1) Default Switch”，然后就可以看到虚拟机启动又重启，如果没有报错，即可通过 ssh 客户端，使用 .\.vagrant\machines\default\hyperv 下的 private_key 访问 192.168.0.2 。
+当询问使用哪个 switch ，选择 “1) Default Switch”，然后就可以看到虚拟机启动又重启。然后在 SMB 共享文件部分，会提示你输入用户名密码，用你操作系统用户名和密码即可。如果没有报错，即可通过 ssh 客户端，使用 .\.vagrant\machines\default\hyperv 下的 private_key 访问 192.168.0.2 。
 
 ## 如何修改一些配置
 
